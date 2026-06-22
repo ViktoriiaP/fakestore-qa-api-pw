@@ -95,7 +95,7 @@ test("delete products - should be successful", async ({ request }) => {
       price: 10,
       description: "A description",
       categoryId: 1,
-      images: ["https://placehold.co/600x400"],
+      images: ["https://placeimg.com/640/480/any"],
     },
     failOnStatusCode: true,
   });
@@ -211,7 +211,7 @@ test("filtering products limit 5 - should be successful", async ({
   request,
 }) => {
   const response = await request.get("/api/v1/products", {
-    params: { limit: 5 },
+    params: { offset: 0, limit: 5 },
   });
 
   expect(response.ok()).toBeTruthy();
