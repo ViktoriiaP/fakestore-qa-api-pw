@@ -40,7 +40,7 @@ test("create products - should be successful", async ({ request }) => {
   expect(jsonGet).toHaveProperty("images", [
     "https://placeimg.com/640/480/any",
   ]);
-  // Вкладене поле через крапку — зручно для перевірки об'єктів усередині відповіді.
+
   expect(jsonGet).toHaveProperty("category.id", 1);
 });
 
@@ -103,9 +103,7 @@ test("delete products - should be successful", async ({ request }) => {
   const json = await response.json();
   const productId = json["id"];
 
-  const responseDelete = await request.delete(
-    `https://api.escuelajs.co/api/v1/products/${productId}`,
-  );
+  const responseDelete = await request.delete(`/api/v1/products/${productId}`);
 
   expect(responseDelete.ok()).toBeTruthy();
   expect(await responseDelete.json()).toBe(true);
