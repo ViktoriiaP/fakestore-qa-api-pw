@@ -150,7 +150,7 @@ test("filtering products by price - should be successful", async ({
 
 // filtering by price between
 
-test("filtering products by price between 10 and 100 - should be successful", async ({
+test("filtering products between min and max price - should be successful", async ({
   request,
 }) => {
   const response = await request.get("/api/v1/products", {
@@ -184,9 +184,9 @@ test("filtering products by price and category - should be successful", async ({
   }
 });
 
-// filtering by price between and category
+// filtering by category and min_max price
 
-test("filtering products by price between 10 and 100 and category - should be successful", async ({
+test("filtering products by category and min_max price - should be successful", async ({
   request,
 }) => {
   const response = await request.get("/api/v1/products", {
@@ -205,7 +205,7 @@ test("filtering products by price between 10 and 100 and category - should be su
 
 // filtering products by limit
 
-test("filtering products limit 5 - should be successful", async ({
+test("filtering products by limit - should be successful", async ({
   request,
 }) => {
   const response = await request.get("/api/v1/products", {
