@@ -1,19 +1,34 @@
 import { test, expect } from "@playwright/test";
+import { generateUniqueTitle } from "../tests/data-generator";
 
-// get product
+// get product and check contain of the response
 
 test("get products - should be successful", async ({ request }) => {
   const response = await request.get("/api/v1/products", {
     failOnStatusCode: true,
   });
   expect(response).toBeOK();
+  expect(response.status()).toBe(200);
+
+  const json = await response.json();
+
+  expect(Array.isArray(json)).toBeTruthy();
+  expect(json.length).toBeGreaterThan(0);
+
+  const product = json[0];
+
+  expect(product).toHaveProperty("id");
+  expect(product).toHaveProperty("title");
+  expect(product).toHaveProperty("slug");
+  expect(product).toHaveProperty("price");
+  expect(product).toHaveProperty("description");
+  expect(product).toHaveProperty("category");
+  expect(product).toHaveProperty("images");
 });
 
 // create new product
 test("create products - should be successful", async ({ request }) => {
-  const randomNumber = Math.floor(Math.random() * 1_000_000);
-  const uniqueTitle = "new product " + randomNumber;
-
+  const uniqueTitle = generateUniqueTitle();
   const responseCreate = await request.post("/api/v1/products", {
     data: {
       title: uniqueTitle,
@@ -47,9 +62,7 @@ test("create products - should be successful", async ({ request }) => {
 // update created products
 
 test("update products - should be successful", async ({ request }) => {
-  const randomNumber = Math.floor(Math.random() * 1_000_000);
-  const uniqueTitle = "new product " + randomNumber;
-
+  const uniqueTitle = generateUniqueTitle();
   const response = await request.post("/api/v1/products", {
     data: {
       title: uniqueTitle,
@@ -66,9 +79,10 @@ test("update products - should be successful", async ({ request }) => {
   expect(productId).toBeTruthy();
   expect(typeof productId).toBe("number");
 
+  const updatedTitle = generateUniqueTitle();
   const responseUpdate = await request.put(`/api/v1/products/${productId}`, {
     data: {
-      title: "My Product",
+      title: updatedTitle,
       price: 109,
       description: "A description",
       categoryId: 1,
@@ -79,16 +93,14 @@ test("update products - should be successful", async ({ request }) => {
   expect(responseUpdate).toBeTruthy();
 
   const jsonUpdate = await responseUpdate.json();
-  expect(jsonUpdate).toHaveProperty("title", "My Product");
+  expect(jsonUpdate).toHaveProperty("title", updatedTitle);
   expect(jsonUpdate).toHaveProperty("price", 109);
   void responseUpdate;
 });
 
 // delete created product
 test("delete products - should be successful", async ({ request }) => {
-  const randomNum = Math.floor(Math.random() * 1_000_000);
-  const uniqueTitle = `New Product` + randomNum;
-
+  const uniqueTitle = generateUniqueTitle();
   let response = await request.post("/api/v1/products/", {
     data: {
       title: uniqueTitle,
