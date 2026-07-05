@@ -22,6 +22,9 @@ test.describe(
           });
 
           return await response.json();
+
+          const headers = response.headers();
+          expect.soft(Number(headers["content-length"])).toBeGreaterThan(1000);
         });
 
       await test.step("Verify product data", async () => {
@@ -65,8 +68,9 @@ test.describe(
       await test.step("Verify updated product", async () => {
         const jsonUpdate = await responseUpdate.json();
 
-        expect(jsonUpdate).toHaveProperty("title", updatedTitle);
-        expect(jsonUpdate).toHaveProperty("price", 109);
+        expect.soft(responseUpdate.status()).toBe(200);
+        expect.soft(jsonUpdate).toHaveProperty("title", updatedTitle);
+        expect.soft(jsonUpdate).toHaveProperty("price", 109);
       });
     });
   },
@@ -103,7 +107,7 @@ test.describe(
 
       response = await request.get(`/api/v1/products/${productId}`);
 
-      expect(response.status()).toBe(400);
+      expect.soft(response.status()).toBe(400);
     });
   },
 );

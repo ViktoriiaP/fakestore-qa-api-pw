@@ -110,8 +110,8 @@ test.describe(
       expect(responseUpdate).toBeTruthy();
 
       const jsonUpdate = (await responseUpdate.json()) as any;
-      expect(jsonUpdate).toHaveProperty("title", updatedTitle);
-      expect(jsonUpdate).toHaveProperty("price", 109);
+      expect.soft(jsonUpdate).toHaveProperty("title", updatedTitle);
+      expect.soft(jsonUpdate).toHaveProperty("price", 109);
       void responseUpdate;
     });
   },
@@ -159,11 +159,22 @@ test.describe(
   "Filtering products",
   { tag: [TAG.functional, TAG.filteringProducts, TAG.smoke] },
   () => {
-    test.only("filtering products by categoryId - should be successful", async ({
+    test("filtering products by categoryId - should be successful", async ({
       request,
     }) => {
       const response = await request.get("/api/v1/products", {
         params: { categoryId: 1 },
+      });
+      let respGet;
+      await expect(async () => {
+        respGet = await request.get("/api/v1/products", {
+          params: { categoryId: 1 },
+          failOnStatusCode: false,
+        });
+        expect(respGet.status()).toBe(200);
+      }).toPass({
+        timeout: 15_000,
+        intervals: [1000, 2_000, 10_000],
       });
 
       expect(response.ok()).toBeTruthy();
