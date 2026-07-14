@@ -1,53 +1,71 @@
 //https://conduit-api.learnwebdriverio.com/api/users
-import { expect, test } from "@playwright/test";
+import { TAG } from "../../fakeapi.platzi/tags";
+import { test as base, expect } from "../fixtures/auth.fixture";
 
-test("users authorization - token should be valid", async ({ request }) => {
-  const randomize = Math.floor(Math.random() * 1_000);
-  const payload = {
-    user: {
-      email: `vik${randomize}@gmail.com`,
-      password: "T123456789",
-      username: `vik${randomize}`,
+test.describe(
+  "Auth for user",
+  {
+    tag: [TAG.functional],
+    annotation: {
+      type: "issue",
+      description: "MG-210",
     },
-  };
+  },
+  () => {
+    test("User registration", async ({ authToken }) => {
+      expect(authToken).toBeDefined();
+    });
 
-  console.log(payload);
-  console.log(JSON.stringify(payload));
+    test("User's authorization - token should be valid", async ({
+      request,
+    }) => {
+      const payload = {
+        user: {
+          email: generateUniqueEmail,
+          password: "T123456789",
+          username: `vik+generateUniqueTitle`,
+        },
+      };
 
-  const response = await request.post("/api/users", {
-    data: payload,
-    failOnStatusCode: false,
-  });
-  const rJson = await response.json();
-  const token = rJson["user"]["token"];
-  console.log(token);
+      console.log(payload);
+      console.log(JSON.stringify(payload));
 
-  expect(token).toBeDefined();
-  expect(response.status()).toBe(200);
-  console.log(await response.text());
-});
+      const response = await request.post("/api/users", {
+        data: payload,
+        failOnStatusCode: false,
+      });
+      const rJson = await response.json();
+      const token = rJson["user"]["token"];
+      console.log(token);
 
-test("login user - token should be valid", async ({ request }) => {
-  console.log(process.env.CONDUIT_EMAIL);
-  console.log(process.env.CONDUIT_PASSWORD);
+      expect(token).toBeDefined();
+      expect(response.status()).toBe(200);
+      console.log(await response.text());
+    });
 
-  const payload = {
-    user: {
-      email: process.env.CONDUIT_EMAIL,
-      password: process.env.CONDUIT_PASSWORD,
-    },
-  };
+    test("login user - token should be valid", async ({ request }) => {
+      console.log(process.env.CONDUIT_EMAIL);
+      console.log(process.env.CONDUIT_PASSWORD);
 
-  const response = await request.post("/api/users/login", {
-    data: payload,
-    failOnStatusCode: false,
-  });
-  const rJson = await response.json();
+      const payload = {
+        user: {
+          email: process.env.CONDUIT_EMAIL,
+          password: process.env.CONDUIT_PASSWORD,
+        },
+      };
 
-  console.log(rJson);
+      const response = await request.post("/api/users/login", {
+        data: payload,
+        failOnStatusCode: false,
+      });
+      const rJson = await response.json();
 
-  expect(response.status()).toBe(200);
-  expect(rJson.user).toBeDefined();
-  const token = rJson.user.token;
-  expect(token).toBeDefined();
-});
+      console.log(rJson);
+
+      expect(response.status()).toBe(200);
+      expect(rJson.user).toBeDefined();
+      const token = rJson.user.token;
+      expect(token).toBeDefined();
+    });
+  },
+);

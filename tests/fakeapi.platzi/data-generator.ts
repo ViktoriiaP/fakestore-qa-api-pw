@@ -6,3 +6,6 @@ export function generateUniqueTitle(): string {
 export function generateUniqueEmail(): string {
   return `vik${Date.now()}${Math.floor(Math.random() * 10000)}@gmail.com`;
 }
+export function generateUniqueUsername() {
+  return `vik${Date.now()}`;
+}
