@@ -10,22 +10,29 @@ type RegisterUser = {
   password: string;
 };
 
+type RegisteredUser = {
+  email: string;
+  username: string;
+  token: string;
+};
+
 type AuthFixtures = {
   registerUser: RegisterUser;
+  registeredUser: RegisteredUser;
   authToken: string;
 };
 
 export const test = base.extend<AuthFixtures>({
   registerUser: async ({}, use) => {
-    const data = {
+    const userData = {
       email: generateUniqueEmail(),
       username: generateUniqueUsername(),
       password: "T123456789",
     };
-    await use(data);
+    await use(userData);
   },
 
-  authToken: async ({ request, registerUser }, use) => {
+  registeredUser: async ({ request, registerUser }, use) => {
     const response = await request.post("/api/users", {
       data: {
         user: registerUser,
@@ -33,12 +40,25 @@ export const test = base.extend<AuthFixtures>({
       failOnStatusCode: true,
     });
 
+    expect(response).toBeOK();
     expect(response.status()).toBe(201);
 
     const json = await response.json();
 
-    await use(json.user.token);
+    expect(json.user).toBeDefined();
+    expect(json.user.token).toBeDefined();
+    expect(json.user.email).toBe(registerUser.email);
+    expect(json.user.username).toBe(registerUser.username);
+
+    await use({
+      email: json.user.email,
+      username: json.user.username,
+      token: json.user.token,
+    });
+  },
+
+  authToken: async ({ registeredUser }, use) => {
+    await use(registeredUser.token);
   },
 });
-
 export { expect };
