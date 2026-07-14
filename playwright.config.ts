@@ -4,9 +4,9 @@ import { defineConfig, devices } from "@playwright/test";
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: ".env" });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -31,14 +31,24 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
   },
+  expect: { timeout: 15_000 },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: "fakeapi.platzi",
-      use: { baseURL: "https://api.escuelajs.co" },
+      use: { baseURL: process.env.PLATZI_BASE_URL },
+      testDir: "tests/fakeapi.platzi",
     },
-
+    {
+      name: "demo.learnwebdriverio",
+      use: {
+        baseURL:
+          process.env.CONDUIT_BASE_URL ||
+          "https://conduit-api.learnwebdriverio.com",
+      },
+      testDir: "tests/demo.learnwebdriverio",
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',

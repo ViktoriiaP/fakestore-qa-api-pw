@@ -1,5 +1,5 @@
 import { APIRequestContext, expect } from "@playwright/test";
-import { generateUniqueTitle } from "./data-generator";
+import { generateUniqueTitle } from "../data-generator";
 
 export interface ProductData {
   title?: string;

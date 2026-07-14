@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { TAG } from "../fakeapi.platzi/tags";
+import { TAG } from "../tags";
+import { Products } from "../schemas/products-schema";
 
 // get product and check contain of the response
 
@@ -14,23 +15,36 @@ test.describe(
       const response = await request.get("/api/v1/products", {
         failOnStatusCode: true,
       });
-      expect(response).toBeOK();
-      expect(response.status()).toBe(200);
+
+      expect.soft(response).toBeOK();
+      expect.soft(response.status()).toBe(200);
+      const headers = await response.headers();
+
+      console.log(headers);
+
+      expect
+        .soft(headers["content-type"])
+        .toBe("application/json; charset=utf-8");
+      expect.soft(headers["server"]).toBe("Heroku");
+      expect.soft(headers["content-security-policy"]).toContain("base-uri");
 
       const json = await response.json();
 
-      expect(Array.isArray(json)).toBeTruthy();
-      expect(json.length).toBeGreaterThan(0);
+      expect.soft(Array.isArray(json)).toBeTruthy();
+      expect.soft(json.length).toBeGreaterThan(0);
+
+      const data = Products.safeParse(json);
+      expect(data.success, { message: data.error?.message }).toBeTruthy();
 
       const product = json[0];
 
-      expect(product).toHaveProperty("id");
-      expect(product).toHaveProperty("title");
-      expect(product).toHaveProperty("slug");
-      expect(product).toHaveProperty("price");
-      expect(product).toHaveProperty("description");
-      expect(product).toHaveProperty("category");
-      expect(product).toHaveProperty("images");
+      expect.soft(product).toHaveProperty("id");
+      expect.soft(product).toHaveProperty("title");
+      expect.soft(product).toHaveProperty("slug");
+      expect.soft(product).toHaveProperty("price");
+      expect.soft(product).toHaveProperty("description");
+      expect.soft(product).toHaveProperty("category");
+      expect.soft(product).toHaveProperty("images");
     });
   },
 );
@@ -54,7 +68,7 @@ test.describe(
       const json = await response.json();
 
       for (const product of json) {
-        expect(product.category.id).toBe(1);
+        expect.soft(product.category.id).toBe(1);
       }
     });
 
@@ -71,7 +85,7 @@ test.describe(
       const json = await response.json();
 
       for (const product of json) {
-        expect(product.price).toBe(10);
+        expect.soft(product.price).toBe(10);
       }
     });
 
@@ -88,8 +102,8 @@ test.describe(
       const json = await response.json();
 
       for (const product of json) {
-        expect(product.price).toBeGreaterThanOrEqual(10);
-        expect(product.price).toBeLessThanOrEqual(100);
+        expect.soft(product.price).toBeGreaterThanOrEqual(10);
+        expect.soft(product.price).toBeLessThanOrEqual(100);
       }
     });
 
@@ -124,9 +138,9 @@ test.describe(
       const json = await response.json();
 
       for (const product of json) {
-        expect(product.price).toBeGreaterThanOrEqual(10);
-        expect(product.price).toBeLessThanOrEqual(100);
-        expect(product.category.id).toBe(1);
+        expect.soft(product.price).toBeGreaterThanOrEqual(10);
+        expect.soft(product.price).toBeLessThanOrEqual(100);
+        expect.soft(product.category.id).toBe(1);
       }
     });
 
@@ -141,7 +155,7 @@ test.describe(
 
       expect(response.ok()).toBeTruthy();
       const json = await response.json();
-      expect(json.length).toBeLessThanOrEqual(5);
+      expect.soft(json.length).toBeLessThanOrEqual(5);
       //expect(json.length).toBe(5);
     });
   },

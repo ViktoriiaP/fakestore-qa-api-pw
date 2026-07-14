@@ -5,6 +5,8 @@ export enum TAG {
   updateProducts = "@updateProduct",
   deleteProducts = "@deleteProducts",
   filteringProducts = "@filter",
+  user = "@user",
+  checkUser = "@checkUser",
   regression = "@regression",
   functional = "@functional",
   smoke = "@smoke",

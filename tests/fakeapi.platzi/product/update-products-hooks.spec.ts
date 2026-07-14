@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { generateUniqueTitle } from "./data-generator";
-import { createProduct } from "../fakeapi.platzi/create-products";
+import { generateUniqueTitle } from "../data-generator";
+import { createProduct } from "./create-products";
 
 let productId: number;
 let payload: any;

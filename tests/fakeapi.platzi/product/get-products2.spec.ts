@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { generateUniqueTitle } from "./data-generator";
-import { TAG } from "../fakeapi.platzi/tags";
-import { createProduct } from "../fakeapi.platzi/create-products";
+import { generateUniqueTitle } from "../data-generator";
+import { TAG } from "../tags";
+import { createProduct } from "./create-products";
 
 //! get product and check contain of the response
 
@@ -274,3 +274,34 @@ test.describe(
     });
   },
 );
+
+test("get products - should be successful with pool", async ({ request }) => {
+  let iterator = 0;
+
+  await expect
+    .poll(
+      // для роботи з асинхроном
+      async () => {
+        const res = await request.get("/api/v1/products/1873", {
+          failOnStatusCode: false,
+        });
+        return res.status();
+      },
+      { timeout: 40_000, intervals: [3_000, 5_000, 10_000] }, //максимум часу робити спроби + вказані інтервали
+    )
+    .toBe(200);
+});
+
+test("get products - should be successful via method pass", async ({
+  request,
+}) => {
+  await expect(async () => {
+    const res = await request.get("/api/v1/products/123", {
+      failOnStatusCode: false,
+    });
+    expect(res.status()).toBe(200);
+  }).toPass({
+    timeout: 30_000,
+    intervals: [3_000, 5_000, 10_000],
+  });
+});

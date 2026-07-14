@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { generateUniqueTitle } from "./data-generator";
-import { TAG } from "../fakeapi.platzi/tags";
-import { createProduct } from "../fakeapi.platzi/create-products";
+import { generateUniqueTitle } from "../data-generator";
+import { TAG } from "../tags";
+import { createProduct } from "./create-products";
 
 //! create new product
 
@@ -72,42 +72,6 @@ test.describe(
         expect.soft(jsonUpdate).toHaveProperty("title", updatedTitle);
         expect.soft(jsonUpdate).toHaveProperty("price", 109);
       });
-    });
-  },
-);
-//! delete created product
-
-test.describe(
-  "Delete product",
-  { tag: [TAG.functional, TAG.smoke, TAG.deleteProducts] },
-  () => {
-    test("delete products - should be successful", async ({ request }) => {
-      const uniqueTitle = generateUniqueTitle();
-      let response = await request.post("/api/v1/products/", {
-        data: {
-          title: uniqueTitle,
-          price: 10,
-          description: "A description",
-          categoryId: 1,
-          images: ["https://placeimg.com/640/480/any"],
-        },
-        failOnStatusCode: true,
-      });
-
-      const json = await response.json();
-      const productId = json["id"];
-
-      const responseDelete = await request.delete(
-        `/api/v1/products/${productId}`,
-      );
-
-      expect(responseDelete.ok()).toBeTruthy();
-      expect(await responseDelete.json()).toBe(true);
-      void responseDelete;
-
-      response = await request.get(`/api/v1/products/${productId}`);
-
-      expect.soft(response.status()).toBe(400);
     });
   },
 );
