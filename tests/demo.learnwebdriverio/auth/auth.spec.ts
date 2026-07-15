@@ -1,5 +1,5 @@
 //https://conduit-api.learnwebdriverio.com/api/users
-import { TAG } from "../../fakeapi.platzi/tags";
+import { TAG } from "../../app/tags";
 import { test, expect } from "../fixtures/auth.fixtures";
 
 test.describe(

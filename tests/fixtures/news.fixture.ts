@@ -9,7 +9,7 @@ export const test = base.extend<NewsFixtures>({
     const request = await playwright.request.newContext({
       baseURL: process.env.NEWS_BASE_URL,
       extraHTTPHeaders: {
-        "X-API-Key": process.env.NEWS_API_KEY!,
+        "X-Api-Key": process.env.NEWS_API_KEY!,
       },
     });
 

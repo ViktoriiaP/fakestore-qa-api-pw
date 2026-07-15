@@ -1,8 +1,5 @@
 import { test as base, expect } from "@playwright/test";
-import {
-  generateUniqueEmail,
-  generateUniqueUsername,
-} from "../fakeapi.platzi/data-generator";
+import { generateUniqueEmail, generateUniqueUsername } from "../data-generator";
 
 type RegisterUser = {
   email: string;

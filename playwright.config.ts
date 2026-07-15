@@ -41,6 +41,11 @@ export default defineConfig({
       testDir: "tests/fakeapi.platzi",
     },
     {
+      name: "newsapi.org",
+      use: { baseURL: process.env.NEWS_BASE_URL || "https://newsapi.org/v2/" },
+      testDir: "tests/newsapi.org/news",
+    },
+    {
       name: "demo.learnwebdriverio",
       use: {
         baseURL:
