@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { generateUniqueTitle } from "../data-generator";
-import { TAG } from "../tags";
+import { generateUniqueTitle } from "../../data/data-generator";
+import { TAG } from "../../app/tags";
 
 //! delete created product
 

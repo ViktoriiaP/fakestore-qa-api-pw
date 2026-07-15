@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { generateUniqueTitle } from "../data-generator";
+import { generateUniqueTitle } from "../../data/data-generator";
 import { createProduct } from "./create-products";
 
 let productId: number;

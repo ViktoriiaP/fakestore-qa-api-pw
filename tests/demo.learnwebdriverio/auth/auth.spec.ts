@@ -1,6 +1,6 @@
 //https://conduit-api.learnwebdriverio.com/api/users
 import { TAG } from "../../app/tags";
-import { test, expect } from "../fixtures/auth.fixtures";
+import { test, expect } from "../../fixtures/auth.fixtures";
 
 test.describe(
   "Get token for registered user",

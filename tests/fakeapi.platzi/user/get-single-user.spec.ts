@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { TAG } from "../tags";
+import { TAG } from "../../app/tags";
 import { UserSchema } from "../schemas/users-schema";
 
 test.describe(

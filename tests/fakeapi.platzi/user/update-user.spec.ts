@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { UserSchema } from "../schemas/users-schema";
 import { CreateUserSchema } from "../schemas/createUser-schema";
 import { UpdateUserSchema } from "../schemas/updateUser-schema";
-import { generateUniqueEmail } from "../data-generator";
+import { generateUniqueEmail } from "../../data/data-generator";
 
 test.describe("Update user", () => {
   test("update user - should be successful", async ({ request }) => {

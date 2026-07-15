@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
-import { TAG } from "../tags";
-import { generateUniqueEmail } from "../data-generator";
+import { TAG } from "../../app/tags";
+import { generateUniqueEmail } from "../../data/data-generator";
 
 test.describe(
   "Check email availability",

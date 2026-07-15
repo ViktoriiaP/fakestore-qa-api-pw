@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { TAG } from "../tags";
+import { TAG } from "../../app/tags";
 import { Products } from "../schemas/products-schema";
 
 // get product and check contain of the response

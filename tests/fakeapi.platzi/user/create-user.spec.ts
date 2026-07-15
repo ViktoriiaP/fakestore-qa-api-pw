@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
-import { TAG } from "../tags";
+import { TAG } from "../../app/tags";
 import { CreateUserSchema } from "../schemas/createUser-schema";
 import { UserSchema } from "../schemas/users-schema";
-import { generateUniqueEmail } from "../data-generator";
+import { generateUniqueEmail } from "../../data/data-generator";
 
 test.describe(
   "Create user",
