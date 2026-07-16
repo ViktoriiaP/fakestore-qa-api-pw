@@ -18,8 +18,6 @@ export type NewsLanguage =
 
 export type NewsSortBy = "relevancy" | "popularity" | "publishedAt";
 
-export type NewsSearchField = "title" | "description" | "content";
-
 export type EverythingParams = {
   q?: string;
   searchIn?: string;
@@ -29,7 +27,7 @@ export type EverythingParams = {
   from?: string;
   to?: string;
   language?: NewsLanguage;
-  sortBy?: string;
+  sortBy?: NewsSortBy;
   pageSize?: number;
   page?: number;
 };
@@ -68,11 +66,12 @@ const keyword = (): string =>
     "artificial intelligence",
   ]);
 
+const todayKeyword = keyword();
 export const everythingTestData: EverythingTestData[] = [
   {
-    testName: "search Apple news published today",
+    testName: "search ${todayKeyword} news published today",
     params: {
-      q: "Apple",
+      q: todayKeyword,
       from: today,
       to: today,
       sortBy: "publishedAt",
@@ -129,7 +128,7 @@ export const everythingTestData: EverythingTestData[] = [
   {
     testName: "search keyword in title and description",
     params: {
-      q: "technology",
+      q: todayKeyword,
       searchIn: "title,description",
       from: fourteenDaysAgo,
       to: today,
@@ -159,7 +158,7 @@ export const everythingTestData: EverythingTestData[] = [
   {
     testName: "exclude a domain from search results",
     params: {
-      q: "technology",
+      q: todayKeyword,
       excludeDomains: "bbc.co.uk",
       from: sevenDaysAgo,
       to: today,
@@ -242,7 +241,7 @@ export const everythingTestData: EverythingTestData[] = [
   {
     testName: "reject page size greater than one hundred",
     params: {
-      q: "Apple",
+      q: todayKeyword,
       pageSize: 101,
     },
     expectedStatus: 400,

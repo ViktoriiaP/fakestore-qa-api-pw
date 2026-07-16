@@ -4,6 +4,10 @@ import {
   everythingTestData,
   type EverythingTestData,
 } from "../../data/news.data";
+import {
+  EverythingSuccessSchema,
+  EverythingErrorSchema,
+} from "../schemas/news.schema";
 
 test.describe(
   "Search for news articles",
@@ -14,27 +18,22 @@ test.describe(
     for (const testData of everythingTestData) {
       test(`Everything API: ${testData.testName}`, async ({ newsRequest }) => {
         // Arrange
-        const params =
-          await test.step(`Prepare search parameters for "${testData.testName}"`, async () => {
-            return testData.params;
-          });
-
+        const params = await test.step("Prepare request parameters", async () =>
+          testData.params);
         // Act
         const response =
-          await test.step("Send request to search for news articles", async () => {
+          await test.step("Send GET /everything request", async () => {
             return await newsRequest.get("everything", {
               params,
               failOnStatusCode: testData.expectedStatus < 400,
             });
           });
 
-        const responseBody =
-          await test.step("Read the news API response body", async () => {
-            return await response.json();
-          });
-
+        const responseBody = await test.step("Read response body", async () => {
+          return await response.json();
+        });
         // Assert
-        await test.step("Verify response status code", async () => {
+        await test.step("Verify status code and response headers", async () => {
           expect.soft(response.status()).toBe(testData.expectedStatus);
 
           if (testData.expectedStatus < 400) {
@@ -42,19 +41,15 @@ test.describe(
           } else {
             expect.soft(response.ok()).toBe(false);
           }
+
+          expect
+            .soft(response.headers()["content-type"])
+            .toContain("application/json");
         });
 
-        await test.step("Verify response content type", async () => {
-          const contentType = response.headers()["content-type"];
-
-          expect.soft(contentType).toContain("application/json");
-        });
-
-        await test.step("Verify response body matches the expected scenario", async () => {
-          expect.soft(responseBody.status).toBe(testData.expectedApiStatus);
-
+        await test.step("Validate news response schema", async () => {
           if (testData.expectedApiStatus === "ok") {
-            verifySuccessfulResponse(responseBody, testData);
+            verifySuccessResponse(responseBody, testData);
           } else {
             verifyErrorResponse(responseBody, testData);
           }
@@ -64,71 +59,90 @@ test.describe(
   },
 );
 
-function verifySuccessfulResponse(
-  responseBody: any,
+function verifySuccessResponse(
+  responseBody: unknown,
   testData: EverythingTestData,
 ): void {
-  expect.soft(responseBody).toHaveProperty("totalResults");
-  expect.soft(responseBody).toHaveProperty("articles");
-
-  expect.soft(responseBody.totalResults).toEqual(expect.any(Number));
-  expect.soft(responseBody.totalResults).toBeGreaterThanOrEqual(0);
-
-  expect.soft(Array.isArray(responseBody.articles)).toBe(true);
-
-  const expectedPageSize = testData.params.pageSize ?? 100;
+  const validationResult = EverythingSuccessSchema.safeParse(responseBody);
 
   expect
-    .soft(responseBody.articles.length)
-    .toBeLessThanOrEqual(expectedPageSize);
+    .soft(
+      validationResult.success,
+      validationResult.success
+        ? undefined
+        : JSON.stringify(validationResult.error.issues, null, 2),
+    )
+    .toBe(true);
 
-  if (testData.expectArticles) {
-    expect.soft(responseBody.articles.length).toBeGreaterThan(0);
-  }
-
-  if (responseBody.articles.length === 0) {
+  if (!validationResult.success) {
     return;
   }
 
-  const firstArticle = responseBody.articles[0];
+  const data = validationResult.data;
 
-  expect.soft(firstArticle).toHaveProperty("source");
-  expect.soft(firstArticle).toHaveProperty("author");
-  expect.soft(firstArticle).toHaveProperty("title");
-  expect.soft(firstArticle).toHaveProperty("description");
-  expect.soft(firstArticle).toHaveProperty("url");
-  expect.soft(firstArticle).toHaveProperty("urlToImage");
-  expect.soft(firstArticle).toHaveProperty("publishedAt");
-  expect.soft(firstArticle).toHaveProperty("content");
+  expect.soft(data.status).toBe("ok");
 
-  expect.soft(firstArticle.source).toEqual(expect.any(Object));
-  expect.soft(firstArticle.title).toEqual(expect.any(String));
-  expect.soft(firstArticle.url).toEqual(expect.any(String));
-  expect.soft(firstArticle.publishedAt).toEqual(expect.any(String));
+  expect.soft(data.totalResults).toBeGreaterThanOrEqual(0);
 
-  expect.soft(firstArticle.source).toHaveProperty("id");
-  expect.soft(firstArticle.source).toHaveProperty("name");
+  expect
+    .soft(data.articles.length)
+    .toBeLessThanOrEqual(testData.params.pageSize ?? 100);
 
-  expect.soft(firstArticle.source.name).toEqual(expect.any(String));
+  if (testData.expectArticles) {
+    expect.soft(data.articles.length).toBeGreaterThan(0);
+  }
 
-  expect.soft(firstArticle.url).toMatch(/^https?:\/\//);
+  if (data.articles.length === 0) {
+    return;
+  }
 
-  expect.soft(Number.isNaN(Date.parse(firstArticle.publishedAt))).toBe(false);
+  const article = data.articles[0];
+
+  expect.soft(article.url).toMatch(/^https?:\/\//);
+
+  expect.soft(Number.isNaN(Date.parse(article.publishedAt))).toBe(false);
+
+  expect.soft(article.source.name.length).toBeGreaterThan(0);
+
+  if (article.author) {
+    expect.soft(article.author.length).toBeGreaterThan(0);
+  }
+
+  if (article.description) {
+    expect.soft(article.description.length).toBeGreaterThan(0);
+  }
+
+  if (article.content) {
+    expect.soft(article.content.length).toBeGreaterThan(0);
+  }
 }
 
 function verifyErrorResponse(
-  responseBody: any,
+  responseBody: unknown,
   testData: EverythingTestData,
 ): void {
-  expect.soft(responseBody).toHaveProperty("status", "error");
-  expect.soft(responseBody).toHaveProperty("code");
-  expect.soft(responseBody).toHaveProperty("message");
+  const validationResult = EverythingErrorSchema.safeParse(responseBody);
 
-  expect.soft(responseBody.code).toEqual(expect.any(String));
-  expect.soft(responseBody.message).toEqual(expect.any(String));
-  expect.soft(responseBody.message.length).toBeGreaterThan(0);
+  expect
+    .soft(
+      validationResult.success,
+      validationResult.success
+        ? undefined
+        : JSON.stringify(validationResult.error.issues, null, 2),
+    )
+    .toBe(true);
+
+  if (!validationResult.success) {
+    return;
+  }
+
+  const data = validationResult.data;
+
+  expect.soft(data.status).toBe("error");
+
+  expect.soft(data.message.length).toBeGreaterThan(0);
 
   if (testData.expectedErrorCode) {
-    expect.soft(responseBody.code).toBe(testData.expectedErrorCode);
+    expect.soft(data.code).toBe(testData.expectedErrorCode);
   }
 }

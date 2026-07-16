@@ -1,14 +1,15 @@
 //https://conduit-api.learnwebdriverio.com/api/users
 import { expect, test } from "@playwright/test";
+import {generateUniqueUsername, generateUniqueEmail} from "../data/data-generator"
 
-class AuthController extends BaseControllers {
+class AuthController extends TaskController {
 test("users authorization - token should be valid", async ({ request }) => {
-  const randomize = Math.floor(Math.random() * 1_000);
+  
   const payload = {
     user: {
-      email: `vik${randomize}@gmail.com`,
+      email: generateUniqueEmail(),
       password: "T123456789",
-      username: `vik${randomize}`,
+      username: generateUniqueUsername(),
     },
   };
 }
