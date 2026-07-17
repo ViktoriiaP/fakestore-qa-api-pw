@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
  * https://github.com/motdotla/dotenv
  */
 import dotenv from "dotenv";
-import path from "path";
+import "dotenv/config";
 dotenv.config({ path: ".env" });
 
 /**
@@ -43,16 +43,16 @@ export default defineConfig({
     {
       name: "newsapi.org",
       use: { baseURL: process.env.NEWS_BASE_URL || "https://newsapi.org/v2/" },
-      testDir: "tests/newsapi.org/news",
+      testDir: "tests/newsapi.org",
     },
     {
-      name: "demo.learnwebdriverio",
+      name: "conduit",
       use: {
         baseURL:
           process.env.CONDUIT_BASE_URL ||
           "https://conduit-api.learnwebdriverio.com",
       },
-      testDir: "tests/demo.learnwebdriverio",
+      testDir: "tests/conduit",
     },
     /* Test against mobile viewports. */
     // {

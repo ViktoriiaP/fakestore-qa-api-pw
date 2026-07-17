@@ -1,5 +1,7 @@
-import { APIRequestContext, expect } from "@playwright/test";
+import { type APIRequestContext, expect } from "@playwright/test";
 import { generateUniqueTitle } from "../../data/data-generator";
+import { getExistingCategoryId } from "../product/get-existing-category";
+import { number } from "zod";
 
 export interface ProductData {
   title?: string;
@@ -13,12 +15,15 @@ export async function createProduct(
   request: APIRequestContext,
   product: ProductData = {},
 ) {
+  const categoryId =
+    product.categoryId ?? (await getExistingCategoryId(request));
+
   const payload = {
     title: product.title ?? generateUniqueTitle(),
     price: product.price ?? 100,
     description: product.description ?? "A description",
-    categoryId: product.categoryId ?? 1,
-    images: product.images ?? ["https://placeimg.com/640/480/any"],
+    categoryId: product.categoryId ?? number,
+    images: product.images ?? ["https://placehold.co/600x400"],
   };
 
   const response = await request.post("/api/v1/products", {
@@ -26,9 +31,12 @@ export async function createProduct(
     failOnStatusCode: true,
   });
 
-  expect(response.ok()).toBeTruthy();
+  expect(response).toBeOK();
+  expect(response.status()).toBe(201);
 
   const json = await response.json();
+
+  expect(json.id).toEqual(expect.any(Number));
 
   return {
     response,
