@@ -123,6 +123,8 @@ test.describe(
       await test.step("Verify returned article", async () => {
         expect(validatedBody.articles.length).toBeGreaterThan(0);
 
+        expect.soft(validatedBody.articlesCount).toBeLessThanOrEqual(10);
+
         expect
           .soft(validatedBody.articles.length)
           .toBeLessThanOrEqual(params.limit);

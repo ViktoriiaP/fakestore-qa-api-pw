@@ -17,61 +17,81 @@ type RegisteredUser = {
   token: string;
 };
 
-type AuthFixtures = {
+// Worker-scoped fixtures register a single Conduit user once per worker and
+// reuse its token across every test in that worker. Test-scoped fixtures build
+// per-test request contexts on top of that shared token.
+type AuthWorkerFixtures = {
   registerUser: RegisterUser;
   registeredUser: RegisteredUser;
   authToken: string;
+};
+
+type AuthTestFixtures = {
   authRequest: APIRequestContext;
 };
 
-export const test = base.extend<AuthFixtures>({
-  registerUser: async ({}, use) => {
-    const userData = {
-      email: generateUniqueEmail(),
-      username: generateUniqueUsername(),
-      password: env.CONDUIT_PASSWORD,
-    };
-    await use(userData);
-  },
+const conduitBaseURL =
+  env.CONDUIT_BASE_URL || "https://conduit-api.learnwebdriverio.com";
 
-  registeredUser: async ({ request, registerUser }, use) => {
-    const response = await request.post("/api/users", {
-      data: {
-        user: registerUser,
-      },
-      failOnStatusCode: true,
-    });
+export const test = base.extend<AuthTestFixtures, AuthWorkerFixtures>({
+  registerUser: [
+    async ({}, use) => {
+      const userData = {
+        email: generateUniqueEmail(),
+        username: generateUniqueUsername(),
+        password: env.CONDUIT_PASSWORD,
+      };
+      await use(userData);
+    },
+    { scope: "worker" },
+  ],
 
-    expect(response).toBeOK();
-    expect(response.status()).toBe(200);
+  registeredUser: [
+    async ({ playwright, registerUser }, use) => {
+      const request = await playwright.request.newContext({
+        baseURL: conduitBaseURL,
+      });
 
-    const json = await response.json();
+      try {
+        const response = await request.post("/api/users", {
+          data: {
+            user: registerUser,
+          },
+          failOnStatusCode: true,
+        });
 
-    expect(json.user).toBeDefined();
-    expect(json.user.token).toBeDefined();
-    expect(json.user.email).toBe(registerUser.email);
-    expect(json.user.username).toBe(registerUser.username);
+        expect(response).toBeOK();
+        expect(response.status()).toBe(200);
 
-    await use({
-      email: json.user.email,
-      username: json.user.username,
-      token: json.user.token,
-    });
-  },
+        const json = await response.json();
 
-  authToken: async ({ registeredUser }, use) => {
-    await use(registeredUser.token);
-  },
+        expect(json.user).toBeDefined();
+        expect(json.user.token).toBeDefined();
+        expect(json.user.email).toBe(registerUser.email);
+        expect(json.user.username).toBe(registerUser.username);
+
+        await use({
+          email: json.user.email,
+          username: json.user.username,
+          token: json.user.token,
+        });
+      } finally {
+        await request.dispose();
+      }
+    },
+    { scope: "worker" },
+  ],
+
+  authToken: [
+    async ({ registeredUser }, use) => {
+      await use(registeredUser.token);
+    },
+    { scope: "worker" },
+  ],
 
   authRequest: async ({ playwright, authToken }, use) => {
-    const baseURL = env.CONDUIT_BASE_URL;
-
-    if (!baseURL) {
-      throw new Error("CONDUIT_BASE_URL is not configured");
-    }
-
     const authorizedRequest = await playwright.request.newContext({
-      baseURL,
+      baseURL: conduitBaseURL,
       extraHTTPHeaders: {
         Authorization: `Token ${authToken}`,
         Accept: "application/json",
