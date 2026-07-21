@@ -1,5 +1,6 @@
 import { test, expect } from "../../fixtures/api-fixtures";
-import { ApiController } from "../../app/conduit/controllers/ApiController";
+import { ApiController } from "./controllers/ApiController";
+import { env } from "node:process";
 
 // Покриває функціонал створення статті (POST /api/articles),
 // що використовується на сторінці "New Article" (https://demo.learnwebdriverio.com/editor)
@@ -25,7 +26,7 @@ test.describe("Conduit - Create Article (POST /api/articles)", () => {
     expect(article["body"]).toBe("body here");
     expect(article["tagList"]).toEqual(["qa", "test"]);
     expect(article["slug"]).toBeDefined();
-    expect(article["author"]["username"]).toBe("admin");
+    expect(article["author"]["username"]).toBe(env.CONDUIT_USERNAME);
     expect(article["favorited"]).toBe(false);
     expect(article["favoritesCount"]).toBe(0);
 
@@ -141,7 +142,7 @@ test("create article - should be created successfully", async ({
   expect(article["body"]).toBe("body here");
   expect(article["tagList"]).toEqual(["qa", "test"]);
   expect(article["slug"]).toBeDefined();
-  expect(article["author"]["username"]).toBe("admin");
+  expect(article["author"]["username"]).toBe(env.CONDUIT_USERNAME);
   expect(article["favorited"]).toBe(false);
   expect(article["favoritesCount"]).toBe(0);
 

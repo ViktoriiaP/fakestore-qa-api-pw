@@ -17,13 +17,11 @@ type Fixtures = {
 
 export const test = base.extend<Fixtures>({
   isAuthorized: true,
-  user: env.CONDUIT__EMAIL,
+  user: env.CONDUIT_EMAIL,
   request: async ({ request, isAuthorized, user }, use) => {
     if (isAuthorized === true) {
       // отримаємо токен
       const token = await getToken(request, user);
-
-      // const isValid = await isTokenValid(request, token);
 
       // створюємо новий контекст реквесту
       const req = await APIRequest.newContext({
@@ -52,13 +50,15 @@ export const test = base.extend<Fixtures>({
 export { expect } from "@playwright/test";
 
 async function isTokenValid(request: APIRequestContext, token: string) {
-  const response = await request.get("/api/articles", {
+  if (!token) {
+    return false;
+  }
+
+  // /api/user requires auth and returns 401 for a missing/invalid token,
+  // unlike /api/articles which is public and returns 200 regardless.
+  const response = await request.get("/api/user", {
     headers: {
       Authorization: `Token ${token}`,
-    },
-    params: {
-      offset: 0,
-      limit: 1,
     },
     failOnStatusCode: false,
   });
