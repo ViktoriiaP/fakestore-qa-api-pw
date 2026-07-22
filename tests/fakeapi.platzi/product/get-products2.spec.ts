@@ -20,7 +20,7 @@ test.describe(
         failOnStatusCode: true,
       });
       expect(response).toBeOK();
-      expect(response.status()).toBe(200);
+      expect(response.status()).toBe(400);
 
       const json = (await response.json()) as any;
 
@@ -289,7 +289,7 @@ test("get products - should be successful with pool", async ({ request }) => {
       },
       { timeout: 40_000, intervals: [3_000, 5_000, 10_000] }, //максимум часу робити спроби + вказані інтервали
     )
-    .toBe(200);
+    .toBe(400);
 });
 
 test("get products - should be successful via method pass", async ({
@@ -299,7 +299,7 @@ test("get products - should be successful via method pass", async ({
     const res = await request.get("/api/v1/products/123", {
       failOnStatusCode: false,
     });
-    expect(res.status()).toBe(200);
+    expect(res.status()).toBe(400);
   }).toPass({
     timeout: 30_000,
     intervals: [3_000, 5_000, 10_000],
