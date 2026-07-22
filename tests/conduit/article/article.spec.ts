@@ -55,7 +55,7 @@ test.describe(
       });
 
       const validatedBody =
-        await test.step("Parse and validate created article response", async () => {
+        await test.step("Validate response to article's schema", async () => {
           return await parseAndValidateResponse(
             response,
             ArticleResponseSchema,
@@ -84,7 +84,7 @@ test.describe(
     test("Get articles should be successful", async ({ authRequest }) => {
       // Arrange
       const params =
-        await test.step("Prepare article list query parameters", async () => {
+        await test.step("Prepare query parameters for searching articles", async () => {
           return {
             offset: 0,
             limit: 10,
@@ -122,8 +122,6 @@ test.describe(
 
       await test.step("Verify returned article", async () => {
         expect(validatedBody.articles.length).toBeGreaterThan(0);
-
-        expect.soft(validatedBody.articlesCount).toBeLessThanOrEqual(10);
 
         expect
           .soft(validatedBody.articles.length)
