@@ -1,9 +1,6 @@
 import { expect, type APIResponse } from "@playwright/test";
 import { z } from "zod";
 
-// Reads API response body, validates it against a Zod schema
-// and returns typed validated data
-
 export async function parseAndValidateResponse<T>(
   response: APIResponse,
   schema: z.ZodType<T>,

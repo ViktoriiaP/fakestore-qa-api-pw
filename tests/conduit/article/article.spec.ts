@@ -44,7 +44,6 @@ test.describe(
 
       // Assert
       await test.step("Verify create article status code", async () => {
-        expect(response.status()).toBe(200);
         expect(response).toBeOK();
       });
 
@@ -102,7 +101,6 @@ test.describe(
 
       // Assert
       await test.step("Verify articles response status code", async () => {
-        expect(response.status()).toBe(200);
         expect(response).toBeOK();
       });
 
@@ -177,7 +175,6 @@ test.describe(
 
       // Assert
       await test.step("Verify response status code", async () => {
-        expect(response.status()).toBe(200);
         expect(response).toBeOK();
       });
 
@@ -229,7 +226,6 @@ test.describe(
 
       // Assert
       await test.step("Verify update settings status code", async () => {
-        expect(response.status()).toBe(200);
         expect(response).toBeOK();
       });
 

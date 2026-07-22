@@ -61,7 +61,6 @@ export const test = base.extend<AuthTestFixtures, AuthWorkerFixtures>({
         });
 
         expect(response).toBeOK();
-        expect(response.status()).toBe(200);
 
         const json = await response.json();
 

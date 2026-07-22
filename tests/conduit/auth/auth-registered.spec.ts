@@ -34,7 +34,6 @@ test.describe(
         });
 
       await test.step("Verify authorization is successful", async () => {
-        expect.soft(response).toBeOK();
         expect.soft(response.status()).toBe(200);
 
         expect
