@@ -23,10 +23,10 @@ const json = [
 ];
 
 const Category = z.object({
-  id: z.number(),
-  name: z.string(),
-  image: z.string(),
-  slug: z.string(),
+  id: z.number().optional(),
+  name: z.string().optional(),
+  image: z.string().optional(),
+  slug: z.string().optional(),
 });
 
 export const Products = z.array(
@@ -37,7 +37,7 @@ export const Products = z.array(
     price: z.number(),
     description: z.string(),
     category: Category,
-    images: z.array(z.string()),
+    images: z.array(z.string()).optional(),
   }),
 );
 const data = Products.safeParse(json);

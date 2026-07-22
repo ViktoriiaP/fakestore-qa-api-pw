@@ -1,7 +1,6 @@
 import { type APIRequestContext, expect } from "@playwright/test";
 import { generateUniqueTitle } from "../../data/data-generator";
 import { getExistingCategoryId } from "../product/get-existing-category";
-import { number } from "zod";
 
 export interface ProductData {
   title?: string;
@@ -21,8 +20,8 @@ export async function createProduct(
   const payload = {
     title: product.title ?? generateUniqueTitle(),
     price: product.price ?? 100,
-    description: product.description ?? "A description",
-    categoryId: product.categoryId ?? number,
+    description: product.description ?? generateUniqueTitle(),
+    categoryId,
     images: product.images ?? ["https://placehold.co/600x400"],
   };
 

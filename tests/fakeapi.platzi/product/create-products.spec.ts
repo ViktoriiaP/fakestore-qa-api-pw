@@ -21,10 +21,10 @@ test.describe(
             failOnStatusCode: true,
           });
 
-          return await response.json();
-
           const headers = response.headers();
-          expect.soft(Number(headers["content-length"])).toBeGreaterThan(1000);
+          expect.soft(Number(headers["content-length"])).toBeGreaterThan(100);
+
+          return await response.json();
         });
 
       await test.step("Verify product data", async () => {

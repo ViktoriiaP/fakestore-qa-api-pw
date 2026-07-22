@@ -11,7 +11,9 @@ export const ArticleSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   url: z.string().url(),
-  urlToImage: z.string().url().nullable(),
+  // NewsAPI does not guarantee a well-formed absolute URL here (empty/relative
+  // strings occur), so treat this non-critical image reference as a plain string.
+  urlToImage: z.string().nullable(),
   publishedAt: z.string().datetime(),
   content: z.string().nullable(),
 });

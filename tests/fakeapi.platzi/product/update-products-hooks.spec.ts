@@ -18,7 +18,7 @@ test("Update product", async ({ request }) => {
       title: generateUniqueTitle(),
       price: 109,
       description: "A description",
-      categoryId: 1,
+      categoryId: 5,
       images: ["https://placeimg.com/640/480/any"],
     },
   });
